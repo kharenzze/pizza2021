@@ -1,14 +1,14 @@
 use std::io;
 use std::io::prelude::*;
 
-#[derive(Default)]
+#[derive(Default, Debug)]
 struct Game {
     m: usize,
     t: (usize, usize, usize),
 }
 
 impl Game {
-    pub fn init() {
+    pub fn init() -> Self {
         let mut instance = Self::default();
 
         let stdin = io::stdin();
@@ -26,4 +26,5 @@ impl Game {
 
 fn main() {
     let game = Game::init();
+    println!("{:?}", &game);
 }
