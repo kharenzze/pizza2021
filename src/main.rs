@@ -13,13 +13,12 @@ impl Game {
 
         let stdin = io::stdin();
         let mut line_iter = stdin.lock().lines();
-        let x = line_iter.next().unwrap().unwrap();
-        let first_line: Vec<&str> = x.split(' ').collect();
-        instance.m = (*first_line[0]).parse().unwrap();
+        let first_line: Vec<String> = line_iter.next().unwrap().unwrap().split(' ').map(|x| String::from(x)).collect();
+        instance.m = first_line[0].parse().unwrap();
         instance.t = (
-            (*first_line[1]).parse().unwrap(),
-            (*first_line[2]).parse().unwrap(),
-            (*first_line[3]).parse().unwrap()
+            first_line[1].parse().unwrap(),
+            first_line[2].parse().unwrap(),
+            first_line[3].parse().unwrap()
         );
         instance
     }
