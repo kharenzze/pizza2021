@@ -1,5 +1,8 @@
-use std::io;
 use std::io::prelude::*;
+use std::{
+    fs::File,
+    io::{self, LineWriter},
+};
 
 #[derive(Default, Debug)]
 struct Game {
@@ -39,10 +42,21 @@ impl Game {
     pub fn calculate_dummy_solution(&mut self) {
         self.s = vec![vec![2], vec![2, 1, 4], vec![3, 0, 2, 3]];
     }
+
+    pub fn write_solution(&self, path: String) {
+        let mut file = LineWriter::new(File::create(path).unwrap());
+        for row in &self.s {
+            let parsed_row: Vec<String> = row.iter().map(|x| x.to_string()).collect();
+            file.write_all(parsed_row.join(" ").as_bytes()).unwrap();
+            file.write_all(b"\n").unwrap();
+        }
+        file.flush().unwrap();
+    }
 }
 
 fn main() {
     let mut game = Game::init();
     println!("{:?}", &game);
     game.calculate_dummy_solution();
+    game.write_solution(String::from("a_example.out"));
 }
