@@ -58,5 +58,7 @@ fn main() {
     let mut game = Game::init();
     println!("{:?}", &game);
     game.calculate_dummy_solution();
-    game.write_solution(String::from("a_example.out"));
+    let output_path = "a_example.out";
+    game.write_solution(String::from(output_path));
+    println!("\nSolution written at: {}", output_path);
 }
