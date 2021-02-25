@@ -13,7 +13,14 @@ struct Game {
     f: usize,
     streets: HashMap<String, Street>,
     cars: Vec<Car>,
+    intersections: Vec<Intersection>,
     solution: Vec<Vec<String>>,
+}
+
+#[derive(Default, Debug)]
+struct Intersection {
+    input: Vec<Box<Street>>,
+    output: Vec<Box<Street>>,
 }
 
 #[derive(Default, Debug)]
@@ -23,6 +30,21 @@ struct Street {
     end: usize,
     name: String,
 }
+
+impl Copy for Street { 
+
+}
+
+impl Clone for Street {
+    fn clone(&self) -> Self {
+        Street {
+            l: self.l,
+            start: self.start,
+            end: self.end,
+            name: self.name.clone(),
+        }
+    }
+ }
 
 impl Street {
     fn from_line(line: &String) -> Street {
@@ -69,10 +91,17 @@ impl Game {
         instance.f = first_line[4].parse().unwrap();
         instance.streets = HashMap::with_capacity(instance.s);
         instance.cars = Vec::with_capacity(instance.v);
+        //instance.intersections = vec![Intersection::default(); instance.i];
+        instance.intersections = Vec::with_capacity(instance.i);
+        for _ in 0..instance.i {
+            instance.intersections.push(Intersection::default());
+        }
         for _ in 0..instance.s {
             let street = Street::from_line(&(line_iter.next().unwrap().unwrap()));
+            let end = street.end;
             let name = street.name.clone();
             instance.streets.insert(name, street);
+            instance.intersections[end].input.push(street);
         }
         for _ in 0..instance.v {
             let car = Car::from_line(&(line_iter.next().unwrap().unwrap()));
