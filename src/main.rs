@@ -3,6 +3,7 @@ use std::{
     fs::File,
     io::{self, LineWriter},
 };
+use std::env;
 
 #[derive(Default, Debug)]
 struct Game {
@@ -150,9 +151,9 @@ impl Game {
 }
 
 fn main() {
+    let output_name = env::args().next().unwrap_or_else(|| "result.txt".to_string());
     let mut game = Game::init();
     game.calculate_greedy_solution();
-    let output_path = "b.out";
-    game.write_solution(String::from(output_path));
-    println!("\nSolution written at: {}", output_path);
+    game.write_solution(String::from(&output_name));
+    println!("\nSolution written at: {}", &output_name);
 }
