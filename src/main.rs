@@ -12,6 +12,7 @@ struct Game {
     s: Vec<Vec<i32>>,
 }
 
+#[derive(Default, Debug)]
 struct Street {
     l: usize,
     start: usize,
@@ -20,16 +21,19 @@ struct Street {
 }
 
 impl Street {
-    from_line(&line: String) -> Street{
+    fn from_line(line: &String) -> Street{
         let elements: Vec<String> = line.split(' ').map(|x| String::from(x)).collect();
-        let street = Street {
-            start: elements[0].parse().unwrap(),
-            end: elements[1].parse().unwrap(),
-            name: elements[2]
-            l: elements[3].parse().unwrap(),
-        }
+        let mut street = Street::default();
+        street.start =  elements[0].parse().unwrap();
+        street.end =  elements[1].parse().unwrap();
+        street.name =  elements[2].clone();
+        street.l =  elements[3].parse().unwrap();
         street
     }
+}
+
+struct Car {
+    route: Vec<String>,
 }
 
 impl Game {
