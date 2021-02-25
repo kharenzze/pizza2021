@@ -1,4 +1,4 @@
-use std::io::prelude::*;
+use std::{collections::HashMap, io::prelude::*};
 use std::{
     fs::File,
     io::{self, LineWriter},
@@ -11,6 +11,8 @@ struct Game {
     s: usize,
     v: usize,
     f: usize,
+    streets: HashMap<String, Street>,
+    cars: Vec<Car>,
     solution: Vec<Vec<String>>,
 }
 
@@ -23,7 +25,7 @@ struct Street {
 }
 
 impl Street {
-    fn from_line(line: &String) -> Street{
+    fn from_line(line: &String) -> Street {
         let elements: Vec<String> = line.split(' ').map(|x| String::from(x)).collect();
         let mut street = Street::default();
         street.start =  elements[0].parse().unwrap();
@@ -37,6 +39,15 @@ impl Street {
 #[derive(Default, Debug)]
 struct Car {
     route: Vec<String>,
+}
+
+impl Car {
+    fn from_line(line: &String) -> Car {
+        let elements: Vec<String> = line.split(' ').map(|x| String::from(x)).collect();
+        let mut car = Car::default();
+        car.route = elements[1..].to_vec();
+        car
+    }
 }
 
 impl Game {
