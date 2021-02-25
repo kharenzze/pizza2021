@@ -21,7 +21,18 @@ struct Street {
     name: String,
 }
 
-
+impl Street {
+    from_line(&line: String) -> Street{
+        let elements: Vec<String> = line.split(' ').map(|x| String::from(x)).collect();
+        let street = Street {
+            start: elements[0].parse().unwrap(),
+            end: elements[1].parse().unwrap(),
+            name: elements[2]
+            l: elements[3].parse().unwrap(),
+        }
+        street
+    }
+}
 
 impl Game {
     pub fn init() -> Self {
