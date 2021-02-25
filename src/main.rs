@@ -107,7 +107,10 @@ impl Game {
     }
 
     pub fn calculate_greedy_solution(&mut self) {
-        
+        self.solution.push(vec![self.i.to_string()]);
+        for &intersection in self.intersections.into_iter() {
+
+        }
     }
 
     pub fn write_solution(&self, path: String) {
