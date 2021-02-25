@@ -19,8 +19,8 @@ struct Game {
 
 #[derive(Default, Debug)]
 struct Intersection {
-    input: Vec<Box<Street>>,
-    output: Vec<Box<Street>>,
+    input: Vec<Street>,
+    output: Vec<Street>,
 }
 
 #[derive(Default, Debug)]
@@ -29,10 +29,6 @@ struct Street {
     start: usize,
     end: usize,
     name: String,
-}
-
-impl Copy for Street { 
-
 }
 
 impl Clone for Street {
@@ -100,7 +96,7 @@ impl Game {
             let street = Street::from_line(&(line_iter.next().unwrap().unwrap()));
             let end = street.end;
             let name = street.name.clone();
-            instance.streets.insert(name, street);
+            instance.streets.insert(name, street.clone());
             instance.intersections[end].input.push(street);
         }
         for _ in 0..instance.v {
