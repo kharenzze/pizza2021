@@ -67,6 +67,17 @@ impl Game {
         instance.s = first_line[2].parse().unwrap();
         instance.v = first_line[3].parse().unwrap();
         instance.f = first_line[4].parse().unwrap();
+        instance.streets = HashMap::with_capacity(instance.s);
+        instance.cars = Vec::with_capacity(instance.v);
+        for _ in 0..instance.s {
+            let street = Street::from_line(&(line_iter.next().unwrap().unwrap()));
+            let name = street.name.clone();
+            instance.streets.insert(name, street);
+        }
+        for _ in 0..instance.v {
+            let car = Car::from_line(&(line_iter.next().unwrap().unwrap()));
+            instance.cars.push(car);
+        }
         instance
     }
 
