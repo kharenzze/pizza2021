@@ -108,8 +108,13 @@ impl Game {
 
     pub fn calculate_greedy_solution(&mut self) {
         self.solution.push(vec![self.i.to_string()]);
-        for &intersection in self.intersections.into_iter() {
-
+        for (i, intersection) in self.intersections.iter().enumerate() {
+            self.solution.push(vec![i.to_string()]);
+            let len = intersection.input.len();
+            self.solution.push(vec![len.to_string()]);
+            for street in intersection.input.iter() {
+                self.solution.push(vec![street.name.clone(), 1.to_string()]);
+            }
         }
     }
 
