@@ -34,6 +34,7 @@ impl Street {
     }
 }
 
+#[derive(Default, Debug)]
 struct Car {
     route: Vec<String>,
 }
