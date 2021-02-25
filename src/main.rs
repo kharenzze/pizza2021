@@ -12,6 +12,15 @@ struct Game {
     s: Vec<Vec<i32>>,
 }
 
+struct Street {
+    l: usize,
+    start: usize,
+    end: usize,
+    name: String,
+}
+
+
+
 impl Game {
     pub fn init() -> Self {
         let mut instance = Self::default();
