@@ -122,15 +122,18 @@ impl Game {
     }
 
     pub fn calculate_greedy_solution(&mut self) {
-        let intersections: Vec<&Intersection> = self.intersections.iter().filter(|x| x.load != 0).collect();
+        let intersections: Vec<(usize, &Intersection)> = self.intersections.iter().enumerate().filter(|x| x.1.load != 0).collect();
         self.solution.push(vec![intersections.len().to_string()]);
-        for (i, intersection) in intersections.iter().enumerate() {
+        for (i, intersection) in intersections.iter() {
             self.solution.push(vec![i.to_string()]);
-            let len = intersection.input.len();
-            self.solution.push(vec![len.to_string()]);
             let streets: Vec<&Street> = intersection.input.iter().filter(|x| x.load != 0).collect();
+            self.solution.push(vec![streets.len().to_string()]);
             for street in streets.iter() {
-                let weight = (street.load * 10) / intersection.load;
+                let mut weight = street.load;
+                if weight > self.d {
+                    weight = self.d;
+                }
+                //println!("{}", street.load * 10);
                 self.solution.push(vec![street.name.clone(), weight.to_string()]);
             }
         }
@@ -149,7 +152,7 @@ impl Game {
 fn main() {
     let mut game = Game::init();
     game.calculate_greedy_solution();
-    let output_path = "a.out";
+    let output_path = "b.out";
     game.write_solution(String::from(output_path));
     println!("\nSolution written at: {}", output_path);
 }
