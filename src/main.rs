@@ -21,6 +21,7 @@ struct Game {
 struct Intersection {
     input: Vec<Street>,
     output: Vec<Street>,
+    load: usize,
 }
 
 #[derive(Default, Debug)]
@@ -29,6 +30,7 @@ struct Street {
     start: usize,
     end: usize,
     name: String,
+    load: usize,
 }
 
 impl Clone for Street {
@@ -38,6 +40,7 @@ impl Clone for Street {
             start: self.start,
             end: self.end,
             name: self.name.clone(),
+            load: self.load,
         }
     }
  }
@@ -101,19 +104,34 @@ impl Game {
         }
         for _ in 0..instance.v {
             let car = Car::from_line(&(line_iter.next().unwrap().unwrap()));
+            for (i, s) in car.route.iter().enumerate() {
+                if i < car.route.len() - 1 {
+                    let street = instance.streets.get(s).unwrap();
+                    instance.intersections[street.end].load += 1;
+                    for is in instance.intersections[street.end].input.iter_mut() {
+                        if is.name.eq(&street.name) {
+                            is.load += 1;
+                            break;
+                        }
+                    }
+                }
+            }
             instance.cars.push(car);
         }
         instance
     }
 
     pub fn calculate_greedy_solution(&mut self) {
-        self.solution.push(vec![self.i.to_string()]);
-        for (i, intersection) in self.intersections.iter().enumerate() {
+        let intersections: Vec<&Intersection> = self.intersections.iter().filter(|x| x.load != 0).collect();
+        self.solution.push(vec![intersections.len().to_string()]);
+        for (i, intersection) in intersections.iter().enumerate() {
             self.solution.push(vec![i.to_string()]);
             let len = intersection.input.len();
             self.solution.push(vec![len.to_string()]);
-            for street in intersection.input.iter() {
-                self.solution.push(vec![street.name.clone(), 1.to_string()]);
+            let streets: Vec<&Street> = intersection.input.iter().filter(|x| x.load != 0).collect();
+            for street in streets.iter() {
+                let weight = (street.load * 10) / intersection.load;
+                self.solution.push(vec![street.name.clone(), weight.to_string()]);
             }
         }
     }
@@ -130,7 +148,6 @@ impl Game {
 
 fn main() {
     let mut game = Game::init();
-    println!("{:?}", &game);
     game.calculate_greedy_solution();
     let output_path = "a.out";
     game.write_solution(String::from(output_path));
