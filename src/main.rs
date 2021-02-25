@@ -106,6 +106,10 @@ impl Game {
         instance
     }
 
+    pub fn calculate_greedy_solution(&mut self) {
+        
+    }
+
     pub fn write_solution(&self, path: String) {
         let mut file = LineWriter::new(File::create(path).unwrap());
         for row in &self.solution {
@@ -117,8 +121,9 @@ impl Game {
 }
 
 fn main() {
-    let game = Game::init();
+    let mut game = Game::init();
     println!("{:?}", &game);
+    game.calculate_greedy_solution();
     let output_path = "a.out";
     game.write_solution(String::from(output_path));
     println!("\nSolution written at: {}", output_path);
