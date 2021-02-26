@@ -140,7 +140,7 @@ impl Game {
         }
     }
 
-    pub fn write_solution(&self, path: String) {
+    pub fn write_solution(&self, path: &String) {
         let mut file = LineWriter::new(File::create(path).unwrap());
         for row in &self.solution {
             file.write_all(row.join(" ").as_bytes()).unwrap();
@@ -151,9 +151,16 @@ impl Game {
 }
 
 fn main() {
-    let output_name = env::args().next().unwrap_or_else(|| "result.txt".to_string());
+    let args: Vec<String> = env::args().collect();
+
+    let output_name = match args.get(1) {
+        Some(x) => x.clone(),
+        None => "result.txt".to_string()
+    };
+    
+    println!("{}", output_name);
     let mut game = Game::init();
     game.calculate_greedy_solution();
-    game.write_solution(String::from(&output_name));
+    game.write_solution(&output_name);
     println!("\nSolution written at: {}", &output_name);
 }
