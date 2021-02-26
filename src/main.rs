@@ -25,7 +25,7 @@ struct Intersection {
     load: usize,
 }
 
-#[derive(Default, Debug)]
+#[derive(Default, Debug, Clone)]
 struct Street {
     l: usize,
     start: usize,
@@ -33,18 +33,6 @@ struct Street {
     name: String,
     load: usize,
 }
-
-impl Clone for Street {
-    fn clone(&self) -> Self {
-        Street {
-            l: self.l,
-            start: self.start,
-            end: self.end,
-            name: self.name.clone(),
-            load: self.load,
-        }
-    }
- }
 
 impl Street {
     fn from_line(line: &String) -> Street {
