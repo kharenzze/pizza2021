@@ -97,15 +97,9 @@ impl Game {
             for (i, s) in car.route.iter().enumerate() {
                 if i < car.route.len() - 1 {
                     let street_ref = instance.streets.get(s).unwrap();
-                    let street = street_ref.borrow_mut();
+                    let mut street = street_ref.borrow_mut();
                     instance.intersections[street.end].load += 1;
-                    for is in instance.intersections[street.end].input.iter() {
-                        let mut intersection_street = is.borrow_mut();
-                        if intersection_street.name.eq(&street.name) {
-                            intersection_street.load += 1;
-                            break;
-                        }
-                    }
+                    street.load += 1;
                 }
             }
             instance.cars.push(car);
