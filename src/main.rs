@@ -1,4 +1,4 @@
-use std::{cell::RefCell, rc::Rc, collections::HashMap, io::prelude::*};
+use std::{borrow::Borrow, cell::{RefCell}, collections::HashMap, io::prelude::*, rc::Rc};
 use std::{
     fs::File,
     io::{self, LineWriter},
@@ -90,7 +90,7 @@ impl Game {
             let name = street.name.clone();
             let r_street: LocalRef<Street> = Rc::new(RefCell::new(street));
             instance.streets.insert(name, Rc::clone(&r_street));
-            instance.intersections[r_street.borrow().end].input.push(Rc::clone(&r_street));
+            instance.intersections[(*r_street).borrow().end].input.push(Rc::clone(&r_street));
         }
         for _ in 0..instance.v {
             let car = Car::from_line(&(line_iter.next().unwrap().unwrap()));
@@ -112,15 +112,16 @@ impl Game {
         self.solution.push(vec![intersections.len().to_string()]);
         for (i, intersection) in intersections.iter() {
             self.solution.push(vec![i.to_string()]);
-            let streets: Vec<LocalRef<Street>> = intersection.input.iter().filter(|x| x.borrow().load != 0).map(|x| Rc::clone(x)).collect();
+            let streets: Vec<LocalRef<Street>> = intersection.input.iter().filter(|x| (***x).borrow().load != 0).map(|x| Rc::clone(x)).collect();
             self.solution.push(vec![streets.len().to_string()]);
             for street_ref in streets.iter() {
-                let mut weight = street_ref.borrow().load;
+                let s = (**street_ref).borrow();
+                let mut weight = s.load;
                 if weight > self.d {
                     weight = self.d;
                 }
                 //println!("{}", street.load * 10);
-                self.solution.push(vec![street_ref.borrow().name.clone(), weight.to_string()]);
+                self.solution.push(vec![s.name.clone(), weight.to_string()]);
             }
         }
     }
