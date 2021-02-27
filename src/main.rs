@@ -1,9 +1,11 @@
-use std::{collections::HashMap, io::prelude::*};
+use std::{cell::RefCell, rc::Rc, collections::HashMap, io::prelude::*};
 use std::{
     fs::File,
     io::{self, LineWriter},
 };
 use std::env;
+
+type LocalRef<T> = Rc<RefCell<T>>;
 
 #[derive(Default, Debug)]
 struct Game {
@@ -12,7 +14,7 @@ struct Game {
     s: usize,
     v: usize,
     f: usize,
-    streets: HashMap<String, Street>,
+    streets: HashMap<String, LocalRef<Street>>,
     cars: Vec<Car>,
     intersections: Vec<Intersection>,
     solution: Vec<Vec<String>>,
@@ -20,8 +22,7 @@ struct Game {
 
 #[derive(Default, Debug)]
 struct Intersection {
-    input: Vec<Street>,
-    output: Vec<Street>,
+    input: Vec<LocalRef<Street>>,
     load: usize,
 }
 
@@ -86,20 +87,22 @@ impl Game {
         }
         for _ in 0..instance.s {
             let street = Street::from_line(&(line_iter.next().unwrap().unwrap()));
-            let end = street.end;
             let name = street.name.clone();
-            instance.streets.insert(name, street.clone());
-            instance.intersections[end].input.push(street);
+            let r_street: LocalRef<Street> = Rc::new(RefCell::new(street));
+            instance.streets.insert(name, Rc::clone(&r_street));
+            instance.intersections[r_street.borrow().end].input.push(Rc::clone(&r_street));
         }
         for _ in 0..instance.v {
             let car = Car::from_line(&(line_iter.next().unwrap().unwrap()));
             for (i, s) in car.route.iter().enumerate() {
                 if i < car.route.len() - 1 {
-                    let street = instance.streets.get(s).unwrap();
+                    let street_ref = instance.streets.get(s).unwrap();
+                    let street = street_ref.borrow_mut();
                     instance.intersections[street.end].load += 1;
-                    for is in instance.intersections[street.end].input.iter_mut() {
-                        if is.name.eq(&street.name) {
-                            is.load += 1;
+                    for is in instance.intersections[street.end].input.iter() {
+                        let mut intersection_street = is.borrow_mut();
+                        if intersection_street.name.eq(&street.name) {
+                            intersection_street.load += 1;
                             break;
                         }
                     }
@@ -115,15 +118,15 @@ impl Game {
         self.solution.push(vec![intersections.len().to_string()]);
         for (i, intersection) in intersections.iter() {
             self.solution.push(vec![i.to_string()]);
-            let streets: Vec<&Street> = intersection.input.iter().filter(|x| x.load != 0).collect();
+            let streets: Vec<LocalRef<Street>> = intersection.input.iter().filter(|x| x.borrow().load != 0).map(|x| Rc::clone(x)).collect();
             self.solution.push(vec![streets.len().to_string()]);
-            for street in streets.iter() {
-                let mut weight = street.load;
+            for street_ref in streets.iter() {
+                let mut weight = street_ref.borrow().load;
                 if weight > self.d {
                     weight = self.d;
                 }
                 //println!("{}", street.load * 10);
-                self.solution.push(vec![street.name.clone(), weight.to_string()]);
+                self.solution.push(vec![street_ref.borrow().name.clone(), weight.to_string()]);
             }
         }
     }
